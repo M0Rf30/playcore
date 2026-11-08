@@ -1,0 +1,22 @@
+[package]
+name = "playcore"
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/M0Rf30/playcore"
+description = "Shared Symphonia-based playback core: decoder, DSD/DoP, sample conversion, crossfade, DSP filters, resampler"
+readme = "README.md"
+keywords = ["audio", "symphonia", "decoder", "dsd", "dsp"]
+categories = ["multimedia::audio"]
+authors = ["Gianluca Boiano"]
+
+[features]
+default = []
+# Streaming sample-rate converter (`playcore::resample`), built on rubato.
+resample = ["dep:rubato", "dep:audioadapter-buffers"]
+
+[dependencies]
+audioadapter-buffers = { version = "5.2.0", optional = true }
+log = "0.4.35"
+rubato = { version = "5.0.1", optional = true }
+symphonia = { git = "https://github.com/M0Rf30/Symphonia", branch = "rmpd-next", features = ["all", "dsd"] }
