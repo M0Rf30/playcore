@@ -797,10 +797,10 @@ fn next_dsd_packet<S, T>(
 /// crosses into another link of a chained Ogg stream switches links and asks for a reset; the
 /// repeated seek then completes inside the new link). One reset is the normal case; the
 /// second retry is slack. A reader still asking for resets after that is broken.
-pub(crate) const MAX_SEEK_RESETS: u32 = 2;
+pub const MAX_SEEK_RESETS: u32 = 2;
 
 /// Something that can seek and be rebuilt after a reset (the decoder; a mock in tests).
-pub(crate) trait ResettableSeek {
+pub trait ResettableSeek {
     /// Seek to `time` on the current default audio track.
     fn try_seek(&mut self, time: Time) -> std::result::Result<SeekedTo, SymphoniaError>;
     /// Re-read the tracks and re-create the decoder after `ResetRequired`.
@@ -826,7 +826,7 @@ impl ResettableSeek for SymphoniaDecoder {
 
 /// Seek, and on `ResetRequired` rebuild and repeat the same seek, at most `max_resets` times.
 /// Any other outcome (success or error) is returned as is.
-pub(crate) fn seek_with_resets<T: ResettableSeek + ?Sized>(
+pub fn seek_with_resets<T: ResettableSeek + ?Sized>(
     target: &mut T,
     time: Time,
     max_resets: u32,
@@ -877,7 +877,7 @@ pub(crate) fn ticks_to_frames(ticks: u64, tb: TimeBase, rate: u32) -> u64 {
 /// decoder must decode from there (it needs the pre-roll to warm up) and the frames before
 /// `required_ts` are discarded, rather than trusting `actual_ts`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) struct SeekSkip {
+pub struct SeekSkip {
     /// The timestamp playback must start at, in the track timebase.
     required: Timestamp,
     /// Upper bound of frames to discard: the announced distance plus one second. Protects
@@ -887,7 +887,7 @@ pub(crate) struct SeekSkip {
 
 impl SeekSkip {
     /// `None` when nothing has to be discarded (landed exactly on, or after, the target).
-    fn new(
+    pub fn new(
         required: Timestamp,
         actual: Timestamp,
         tb: Option<TimeBase>,
@@ -905,7 +905,7 @@ impl SeekSkip {
     /// Account for one decoded buffer of `decoded_frames` frames whose first valid frame is at
     /// `valid_start`. Returns how many leading frames to discard and whether the target has
     /// been reached (so no more skipping is needed).
-    fn advance(
+    pub fn advance(
         &mut self,
         valid_start: Timestamp,
         decoded_frames: usize,
